@@ -5,12 +5,14 @@ extends:
   - eslint:recommended
   - plugin:node/recommended
   - plugin:promise/recommended
+#  - plugin:lodash/canonical
 plugins:
   - import
   - prettier
   - standard
   - node
   - promise
+  - lodash
 env:
   node: true
   es6: true

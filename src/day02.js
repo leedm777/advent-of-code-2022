@@ -1,7 +1,5 @@
 import _ from "lodash";
 
-// TODO: Replace switch statements with object lookups
-
 const opponentToRPS = {
   A: "rock",
   B: "paper",

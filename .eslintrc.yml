@@ -1,0 +1,21 @@
+---
+extends:
+  - standard
+  - prettier
+  - eslint:recommended
+  - plugin:node/recommended
+  - plugin:promise/recommended
+plugins:
+  - import
+  - prettier
+  - standard
+  - node
+  - promise
+env:
+  node: true
+  es6: true
+  jest: true
+rules:
+  prettier/prettier: 2
+parserOptions:
+  ecmaVersion: 2020

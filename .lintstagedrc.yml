@@ -1,0 +1,9 @@
+---
+"*.js":
+  - eslint --fix --max-warnings 0
+"*.json":
+  - prettier --write
+"*.md":
+  - prettier --write
+"*.yml":
+  - prettier --write

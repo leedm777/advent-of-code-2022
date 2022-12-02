@@ -1,2 +1,1 @@
-export default { transform: {} }
-
+export default { transform: {} };

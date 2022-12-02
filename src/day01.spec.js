@@ -34,11 +34,11 @@ describe('day01', () => {
     describe('part 2', () => {
         it('should work with the sample', () => {
             const actual = part2(exampleInput);
-            expect(actual).toStrictEqual(24000);
+            expect(actual).toStrictEqual(45000);
         });
         it('should work with the puzzle input', () => {
             const actual = part2(puzzleInput);
-            expect(actual).toStrictEqual();
+            expect(actual).toStrictEqual(201524);
         })
     });
 })

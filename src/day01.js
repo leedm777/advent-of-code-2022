@@ -1,6 +1,6 @@
 import _ from 'lodash'
 
-export function part1(input) {
+function toElves(input) {
     return _.chain(input)
         .reduce(({elves, elf}, caloriesStr) => {
             if (_.isEmpty(caloriesStr)) {
@@ -20,10 +20,18 @@ export function part1(input) {
         })
         .thru(({elves, elf}) => [...elves, elf] )
         .map(elf => _.sum(elf))
+}
+
+export function part1(input) {
+    return toElves(input)
         .max()
         .value();
 }
 
 export function part2(input) {
-
+    return toElves(input)
+        .sortBy(x => -x)
+        .take(3)
+        .sum()
+        .value()
 }

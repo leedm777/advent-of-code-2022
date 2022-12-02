@@ -1,10 +1,6 @@
 import _ from "lodash";
 
-const scoreByShape = {
-  rock: 1,
-  paper: 2,
-  scissors: 3,
-};
+// TODO: Replace switch statements with object lookups
 
 const opponentToRPS = {
   A: "rock",
@@ -26,27 +22,20 @@ function parseRound(str) {
   };
 }
 
+const scoreByShape = {
+  rock: 1,
+  paper: 2,
+  scissors: 3,
+};
+
+const meToOpponentToScore = {
+  rock: { rock: 3, paper: 0, scissors: 6 },
+  paper: { rock: 6, paper: 3, scissors: 0 },
+  scissors: { rock: 0, paper: 6, scissors: 3 },
+};
+
 function scoreRound({ opponent, me }) {
-  const baseScore = scoreByShape[me];
-
-  if (opponent === me) {
-    // draw
-    return baseScore + 3;
-  }
-
-  // wins
-  if (me === "paper" && opponent === "rock") {
-    return baseScore + 6;
-  }
-  if (me === "scissors" && opponent === "paper") {
-    return baseScore + 6;
-  }
-  if (me === "rock" && opponent === "scissors") {
-    return baseScore + 6;
-  }
-
-  // lose
-  return baseScore + 0;
+  return meToOpponentToScore[me][opponent] + scoreByShape[me];
 }
 
 export function part1(input) {
@@ -68,31 +57,14 @@ function parseRound2(str) {
   };
 }
 
+const opponentToOutcomeToPlay = {
+  rock: { win: "paper", lose: "scissors", draw: "rock" },
+  paper: { win: "scissors", lose: "rock", draw: "paper" },
+  scissors: { win: "rock", lose: "paper", draw: "scissors" },
+};
+
 function selectChoice(opponent, outcome) {
-  switch (outcome) {
-    case "lose":
-      switch (opponent) {
-        case "rock":
-          return "scissors";
-        case "paper":
-          return "rock";
-        case "scissors":
-          return "paper";
-      }
-      break;
-    case "draw":
-      return opponent;
-    case "win":
-      switch (opponent) {
-        case "rock":
-          return "paper";
-        case "paper":
-          return "scissors";
-        case "scissors":
-          return "rock";
-      }
-      break;
-  }
+  return opponentToOutcomeToPlay[opponent][outcome];
 }
 
 function playRound2({ opponent, outcome }) {

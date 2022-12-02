@@ -8,6 +8,8 @@ async function main() {
     try {
       const dayStr = _.padStart(day.toString(10), 2, "0");
       const puzzleInput = readInput(`./src/day${dayStr}.txt`);
+      // https://github.com/mysticatea/eslint-plugin-node/issues/250
+      // eslint-disable-next-line node/no-unsupported-features/es-syntax
       const solver = await import(`./day${dayStr}.js`);
 
       console.log(`Day ${day}:`);

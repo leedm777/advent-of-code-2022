@@ -6,27 +6,27 @@ const scoreByShape = {
   scissors: 3,
 };
 
-const m1 = {
-  A: 'rock',
-  B: 'paper',
-  C: 'scissors'
-}
+const opponentToRPS = {
+  A: "rock",
+  B: "paper",
+  C: "scissors",
+};
 
-const m2 = {
-  X: 'rock',
-  Y: 'paper',
-  Z: 'scissors'
-}
+const meToRPS = {
+  X: "rock",
+  Y: "paper",
+  Z: "scissors",
+};
 
 function parseRound(str) {
-  const [p1, p2] = str.split(' ');
+  const [p1, p2] = str.split(" ");
   return {
-    p1: m1[p1],
-    p2: m2[p2]
-  }
+    opponent: opponentToRPS[p1],
+    me: meToRPS[p2],
+  };
 }
 
-function scoreRound({p1: opponent, p2: me}) {
+function scoreRound({ opponent, me }) {
   const baseScore = scoreByShape[me];
 
   if (opponent === me) {
@@ -50,12 +50,63 @@ function scoreRound({p1: opponent, p2: me}) {
 }
 
 export function part1(input) {
-  return _.chain(input)
-    .map(parseRound)
-    .map(scoreRound)
-    .sum()
-    .value();
+  return _.chain(input).map(parseRound).map(scoreRound).sum().value();
+}
+
+const meToOutcome = {
+  X: "lose",
+  Y: "draw",
+  Z: "win",
+};
+
+function parseRound2(str) {
+  const [p1, p2] = str.split(" ");
+
+  return {
+    opponent: opponentToRPS[p1],
+    outcome: meToOutcome[p2],
+  };
+}
+
+function selectChoice(opponent, outcome) {
+  switch (outcome) {
+    case "lose":
+      switch (opponent) {
+        case "rock":
+          return "scissors";
+        case "paper":
+          return "rock";
+        case "scissors":
+          return "paper";
+      }
+      break;
+    case "draw":
+      return opponent;
+    case "win":
+      switch (opponent) {
+        case "rock":
+          return "paper";
+        case "paper":
+          return "scissors";
+        case "scissors":
+          return "rock";
+      }
+      break;
+  }
+}
+
+function playRound2({ opponent, outcome }) {
+  return {
+    opponent,
+    me: selectChoice(opponent, outcome),
+  };
 }
 
 export function part2(input) {
+  return _.chain(input)
+    .map(parseRound2)
+    .map(playRound2)
+    .map(scoreRound)
+    .sum()
+    .value();
 }

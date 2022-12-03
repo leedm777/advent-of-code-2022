@@ -21,7 +21,7 @@ export function part1(input) {
 }
 
 function strToArray(s) {
-  return _.map(s, _.identity);
+  return _.map(s);
 }
 
 export function part2(input) {

@@ -13,7 +13,7 @@ const meToRPS = {
 };
 
 function parseRound(str) {
-  const [p1, p2] = str.split(" ");
+  const [p1, p2] = _.split(str, " ");
   return {
     opponent: opponentToRPS[p1],
     me: meToRPS[p2],
@@ -37,7 +37,7 @@ function scoreRound({ opponent, me }) {
 }
 
 export function part1(input) {
-  return _.chain(input).map(parseRound).map(scoreRound).sum().value();
+  return _(input).map(parseRound).map(scoreRound).sum();
 }
 
 const meToOutcome = {
@@ -47,7 +47,7 @@ const meToOutcome = {
 };
 
 function parseRound2(str) {
-  const [p1, p2] = str.split(" ");
+  const [p1, p2] = _.split(str, " ");
 
   return {
     opponent: opponentToRPS[p1],
@@ -73,10 +73,5 @@ function playRound2({ opponent, outcome }) {
 }
 
 export function part2(input) {
-  return _.chain(input)
-    .map(parseRound2)
-    .map(playRound2)
-    .map(scoreRound)
-    .sum()
-    .value();
+  return _(input).map(parseRound2).map(playRound2).map(scoreRound).sum();
 }

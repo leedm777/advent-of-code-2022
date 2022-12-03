@@ -1,38 +1,38 @@
 import _ from "lodash";
 
 function toElves(input) {
-  return _.chain(input)
-    .reduce(
-      ({ elves, elf }, caloriesStr) => {
-        if (_.isEmpty(caloriesStr)) {
-          return {
-            elves: [...elves, elf],
-            elf: [],
-          };
-        }
-
+  const { elves, elf } = _.reduce(
+    input,
+    ({ elves, elf }, caloriesStr) => {
+      if (_.isEmpty(caloriesStr)) {
         return {
-          elves,
-          elf: [...elf, parseInt(caloriesStr, 10)],
+          elves: [...elves, elf],
+          elf: [],
         };
-      },
-      {
-        elves: [],
-        elf: [],
       }
-    )
-    .thru(({ elves, elf }) => [...elves, elf])
-    .map((elf) => _.sum(elf));
+
+      return {
+        elves,
+        elf: [...elf, parseInt(caloriesStr, 10)],
+      };
+    },
+    {
+      elves: [],
+      elf: [],
+    }
+  );
+
+  return _.map([...elves, elf], _.sum);
 }
 
 export function part1(input) {
-  return toElves(input).max().value();
+  return _.max(toElves(input));
 }
 
 export function part2(input) {
-  return toElves(input)
+  const elves = toElves(input);
+  return _(elves)
     .sortBy((x) => -x)
     .take(3)
-    .sum()
-    .value();
+    .sum();
 }

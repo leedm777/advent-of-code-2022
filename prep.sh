@@ -11,6 +11,9 @@ export TZ=America/New_York
 year=$(date +%Y)
 day=$(date +%d)
 input=./src/day${day}.txt
+url=https://adventofcode.com/${year}/day/$((10#${day}))
+
+open ${url}
 
 if test -e src/day${day}.js; then
   echo "day${day}.js already exists" >&2
@@ -22,7 +25,7 @@ curl \
   --output ${input} \
   --fail \
   --cookie .cookies.txt \
-  https://adventofcode.com/${year}/day/$((10#${day}))/input
+  ${url}/input
 
 head ${input}
 
@@ -30,9 +33,16 @@ cat <<EOF > src/day${day}.js
 import _ from "lodash";
 
 export function part1(input) {
+  return _.chain(input)
+    // TODO
+    .value();
 }
 
 export function part2(input) {
+  return _.chain(input)
+    // TODO
+    .value();
+}
 EOF
 
 cat <<EOF > src/day${day}.spec.js

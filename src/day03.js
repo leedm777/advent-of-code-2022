@@ -20,4 +20,17 @@ export function part1(input) {
     .sum();
 }
 
-export function part2(input) {}
+function strToArray(s) {
+  return _.map(s, _.identity);
+}
+
+export function part2(input) {
+  return _(input)
+    .chunk(3)
+    .map(
+      ([e1, e2, e3]) =>
+        _.intersection(strToArray(e1), strToArray(e2), strToArray(e3))[0]
+    )
+    .map(scoreItem)
+    .sum();
+}

@@ -1,26 +1,18 @@
 import _ from "lodash";
 
-function startOfPacket(str) {
-  for (let i = 0; i < str.length - 4; ++i) {
-    const marker = _.slice(str, i, i + 4);
-    if (_.uniq(marker).length === 4) {
-      return i + 4;
+function startOfPacket(str, len = 4) {
+  for (let i = 0; i < str.length - len; ++i) {
+    const marker = _.slice(str, i, i + len);
+    if (_.uniq(marker).length === len) {
+      return i + len;
     }
   }
 }
 
 export function part1(input) {
-  return (
-    _.chain(input)
-      .map(startOfPacket)
-      .value()
-  );
+  return _.map(input, (s) => startOfPacket(s, 4));
 }
 
 export function part2(input) {
-  return (
-    _.chain(input)
-      // TODO
-      .value()
-  );
+  return _.map(input, (s) => startOfPacket(s, 14));
 }

@@ -29,7 +29,7 @@ function parseMove(stacks, line) {
   const from = parseInt(fromStr) - 1;
   const to = parseInt(toStr) - 1;
 
-  const res = _.reduce(
+  return _.reduce(
     _.range(0, num),
     (stacks) => {
       const crate = _.head(stacks[from]);
@@ -45,8 +45,28 @@ function parseMove(stacks, line) {
     },
     stacks
   );
+}
 
-  return res;
+function parseMove9001(stacks, line) {
+  const { numStr, fromStr, toStr } = line.match(
+    /move (?<numStr>\d+) from (?<fromStr>\d+) to (?<toStr>\d+)/
+  ).groups;
+
+  const num = parseInt(numStr, 10);
+  const from = parseInt(fromStr) - 1;
+  const to = parseInt(toStr) - 1;
+
+  const moved = _.slice(stacks[from], 0, num);
+
+  return _.map(stacks, (stack, n) => {
+    if (n === from) {
+      return _.slice(stack, num);
+    } else if (n === to) {
+      return [...moved, ...stack];
+    } else {
+      return stack;
+    }
+  });
 }
 
 function parseInput({ stacks, moves, parsingStacks }, line) {
@@ -73,6 +93,30 @@ function parseInput({ stacks, moves, parsingStacks }, line) {
   };
 }
 
+function parseInput9001({ stacks, moves, parsingStacks }, line) {
+  if (parsingStacks) {
+    if (_.isEmpty(line)) {
+      return {
+        stacks,
+        moves,
+        parsingStacks: false,
+      };
+    }
+
+    return {
+      stacks: parseStack(stacks, line),
+      moves,
+      parsingStacks,
+    };
+  }
+
+  return {
+    stacks: parseMove9001(stacks, line),
+    moves,
+    parsingStacks,
+  };
+}
+
 export function part1(input) {
   return _.chain(input)
     .reduce(parseInput, {
@@ -86,9 +130,13 @@ export function part1(input) {
 }
 
 export function part2(input) {
-  return (
-    _.chain(input)
-      // TODO
-      .value()
-  );
+  return _.chain(input)
+    .reduce(parseInput9001, {
+      stacks: [],
+      moves: [],
+      parsingStacks: true,
+    })
+    .thru(({ stacks }) => _.map(stacks, _.first))
+    .join("")
+    .value();
 }

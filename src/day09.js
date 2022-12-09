@@ -1,5 +1,33 @@
 import _ from "lodash";
 
+function computeHeadPositions(input) {
+  const singleMoves = _.reduce(
+    input,
+    (singleMoves, move) => {
+      const [dir, distStr] = _.split(move, " ");
+      const dist = parseInt(distStr, 10);
+      return `${singleMoves}${_.repeat(dir, dist)}`;
+    },
+    ""
+  );
+
+  const { past: headPositions } = _.reduce(
+    singleMoves,
+    ({ past, current }, move) => {
+      const next = moveHead(current, move);
+      return {
+        past: [...past, next],
+        current: next,
+      };
+    },
+    {
+      past: [{ x: 0, y: 0 }],
+      current: { x: 0, y: 0 },
+    }
+  );
+  return headPositions;
+}
+
 function moveHead({ x, y }, move) {
   switch (move) {
     case "L":
@@ -44,30 +72,7 @@ function moveNextKnot(headPositions) {
 }
 
 export function part1(input) {
-  const singleMoves = _.reduce(
-    input,
-    (singleMoves, move) => {
-      const [dir, distStr] = _.split(move, " ");
-      const dist = parseInt(distStr, 10);
-      return `${singleMoves}${_.repeat(dir, dist)}`;
-    },
-    ""
-  );
-
-  const { past: headPositions } = _.reduce(
-    singleMoves,
-    ({ past, current }, move) => {
-      const next = moveHead(current, move);
-      return {
-        past: [...past, next],
-        current: next,
-      };
-    },
-    {
-      past: [{ x: 0, y: 0 }],
-      current: { x: 0, y: 0 },
-    }
-  );
+  const headPositions = computeHeadPositions(input);
   const tailPositions = moveNextKnot(headPositions);
 
   return _(tailPositions)
@@ -77,40 +82,13 @@ export function part1(input) {
 }
 
 export function part2(input) {
-  const singleMoves = _.reduce(
-    input,
-    (singleMoves, move) => {
-      const [dir, distStr] = _.split(move, " ");
-      const dist = parseInt(distStr, 10);
-      return `${singleMoves}${_.repeat(dir, dist)}`;
-    },
-    ""
-  );
+  const headPositions = computeHeadPositions(input);
 
-  const { past: headPositions } = _.reduce(
-    singleMoves,
-    ({ past, current }, move) => {
-      const next = moveHead(current, move);
-      return {
-        past: [...past, next],
-        current: next,
-      };
-    },
-    {
-      past: [{ x: 0, y: 0 }],
-      current: { x: 0, y: 0 },
-    }
+  const tailPositions = _.reduce(
+    _.range(0, 9),
+    (currentKnot) => moveNextKnot(currentKnot),
+    headPositions
   );
-
-  const knot1Postitions = moveNextKnot(headPositions);
-  const knot2Postitions = moveNextKnot(knot1Postitions);
-  const knot3Postitions = moveNextKnot(knot2Postitions);
-  const knot4Postitions = moveNextKnot(knot3Postitions);
-  const knot5Postitions = moveNextKnot(knot4Postitions);
-  const knot6Postitions = moveNextKnot(knot5Postitions);
-  const knot7Postitions = moveNextKnot(knot6Postitions);
-  const knot8Postitions = moveNextKnot(knot7Postitions);
-  const tailPositions = moveNextKnot(knot8Postitions);
 
   return _(tailPositions)
     .map(({ x, y }) => `(${x},${y})`)

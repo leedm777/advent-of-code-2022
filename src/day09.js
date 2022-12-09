@@ -25,6 +25,24 @@ function moveTail(t, h) {
   return { x: t.x + Math.sign(deltaX), y: t.y + Math.sign(deltaY) };
 }
 
+function moveNextKnot(headPositions) {
+  const { past: tailPositions } = _.reduce(
+    headPositions,
+    ({ past, current }, headPosition) => {
+      const next = moveTail(current, headPosition);
+      return {
+        past: [...past, next],
+        current: next,
+      };
+    },
+    {
+      past: [{ x: 0, y: 0 }],
+      current: { x: 0, y: 0 },
+    }
+  );
+  return tailPositions;
+}
+
 export function part1(input) {
   const singleMoves = _.reduce(
     input,
@@ -50,11 +68,29 @@ export function part1(input) {
       current: { x: 0, y: 0 },
     }
   );
+  const tailPositions = moveNextKnot(headPositions);
 
-  const { past: tailPositions } = _.reduce(
-    headPositions,
-    ({ past, current }, headPosition) => {
-      const next = moveTail(current, headPosition);
+  return _(tailPositions)
+    .map(({ x, y }) => `(${x},${y})`)
+    .uniq()
+    .size();
+}
+
+export function part2(input) {
+  const singleMoves = _.reduce(
+    input,
+    (singleMoves, move) => {
+      const [dir, distStr] = _.split(move, " ");
+      const dist = parseInt(distStr, 10);
+      return `${singleMoves}${_.repeat(dir, dist)}`;
+    },
+    ""
+  );
+
+  const { past: headPositions } = _.reduce(
+    singleMoves,
+    ({ past, current }, move) => {
+      const next = moveHead(current, move);
       return {
         past: [...past, next],
         current: next,
@@ -66,17 +102,18 @@ export function part1(input) {
     }
   );
 
+  const knot1Postitions = moveNextKnot(headPositions);
+  const knot2Postitions = moveNextKnot(knot1Postitions);
+  const knot3Postitions = moveNextKnot(knot2Postitions);
+  const knot4Postitions = moveNextKnot(knot3Postitions);
+  const knot5Postitions = moveNextKnot(knot4Postitions);
+  const knot6Postitions = moveNextKnot(knot5Postitions);
+  const knot7Postitions = moveNextKnot(knot6Postitions);
+  const knot8Postitions = moveNextKnot(knot7Postitions);
+  const tailPositions = moveNextKnot(knot8Postitions);
+
   return _(tailPositions)
     .map(({ x, y }) => `(${x},${y})`)
     .uniq()
     .size();
-}
-
-export function part2(input) {
-  return (
-    // eslint-disable-next-line lodash/chaining
-    _(input)
-      // TODO
-      .value()
-  );
 }

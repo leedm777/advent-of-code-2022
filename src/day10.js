@@ -53,10 +53,6 @@ export class ClockCircuit {
     return this.state.pc;
   }
 
-  get alu() {
-    return this.state.alu;
-  }
-
   get x() {
     return this.state.x;
   }
@@ -66,9 +62,9 @@ export class ClockCircuit {
   }
 }
 
-function parseProgram(lines) {
+export function parseProgram(lines) {
   return _.map(lines, (line) => {
-    const [op, arg1] = line.split(" ");
+    const [op, arg1] = _.split(line, " ");
     switch (op) {
       case "noop":
         return { op };
@@ -80,18 +76,36 @@ function parseProgram(lines) {
   });
 }
 
+export function tickBy(machine, n) {
+  for (let i = 0; i < n; ++i) {
+    machine = machine.tick();
+  }
+  return machine;
+}
+
 export function part1(input) {
   const program = parseProgram(input);
   let machine = new ClockCircuit({ program });
   let sum = 0;
 
+  // const log = [];
+
   for (let i = 0; i < 220; ++i) {
+    // log.push(
+    //   `${machine.clock} (pc: ${machine.pc}, opCycle: ${
+    //     machine.opCycle
+    //   }): ${JSON.stringify(machine.program[machine.pc])}`
+    // );
+    const during = machine.x;
     machine = machine.tick();
     if ((machine.clock - 20) % 40 === 0) {
-      console.log(`${machine.clock} * ${machine.x}`);
-      sum += machine.x * machine.clock;
+      sum += during * machine.clock;
     }
+    // log.push(`  --> ${machine.x}`);
   }
+
+  // console.log(_.join(log, "\n"));
+
   return sum;
 }
 

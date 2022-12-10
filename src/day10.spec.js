@@ -6,7 +6,7 @@ const exampleInput = theExampleInputIsTooLong();
 
 describe("day10", () => {
   describe("part 1", () => {
-    it.only("should work with a smaller example", async () => {
+    it("should work with a smaller example", async () => {
       const program = [
         { op: "noop" },
         { op: "addx", arg1: 3 },
@@ -33,6 +33,7 @@ describe("day10", () => {
     });
     it("should work with the puzzle input", () => {
       const actual = part1(puzzleInput);
+      expect(actual).toBeLessThan(14800);
       expect(actual).toStrictEqual();
     });
   });

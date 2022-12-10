@@ -1,62 +1,44 @@
 import _ from "lodash";
 
-class ALU {
-  constructor({ x = 1, queue = [{ op: "noop" }] } = {}) {
-    this.state = {
-      x,
-      queue,
-    };
-  }
-
-  tick(instruction) {
-    const [exec, ...queue] = this.queue;
-    queue.push(instruction);
-
-    let x = this.x;
-
-    switch (exec.op) {
-      case "addx":
-        x += exec.arg1;
-        break;
-      case "noop":
-        break;
-      default:
-        throw new Error(`Unknown op ${exec.op}`);
-    }
-
-    return new ALU({
-      x,
-      queue,
-    });
-  }
-
-  get queue() {
-    return this.state.queue;
-  }
-
-  get x() {
-    return this.state.x;
-  }
-}
-
 export class ClockCircuit {
-  constructor({ program, alu = new ALU(), pc = 0, clock = 0 }) {
+  constructor({ program, x = 1, opCycle = 0, pc = 0, clock = 0 }) {
     this.state = {
       clock,
       program,
-      alu,
+      opCycle,
       pc,
+      x,
     };
   }
 
   tick() {
-    const instruction = this.program[this.pc];
-    return new ClockCircuit({
-      program: this.program,
-      clock: this.clock + 1,
-      pc: this.pc + 1,
-      alu: this.alu.tick(instruction),
-    });
+    const { op, arg1 } = this.program[this.pc];
+
+    switch (op) {
+      case "noop":
+        return new ClockCircuit({
+          ...this.state,
+          clock: this.clock + 1,
+          pc: this.pc + 1,
+        });
+      case "addx":
+        if (this.opCycle < 1) {
+          return new ClockCircuit({
+            ...this.state,
+            clock: this.clock + 1,
+            opCycle: this.opCycle + 1,
+          });
+        }
+        return new ClockCircuit({
+          ...this.state,
+          clock: this.clock + 1,
+          pc: this.pc + 1,
+          opCycle: 0,
+          x: this.x + arg1,
+        });
+      default:
+        throw new Error(`Unknown op ${op}`);
+    }
   }
 
   get program() {
@@ -76,16 +58,41 @@ export class ClockCircuit {
   }
 
   get x() {
-    return this.state.alu.x;
+    return this.state.x;
+  }
+
+  get opCycle() {
+    return this.state.opCycle;
   }
 }
 
+function parseProgram(lines) {
+  return _.map(lines, (line) => {
+    const [op, arg1] = line.split(" ");
+    switch (op) {
+      case "noop":
+        return { op };
+      case "addx":
+        return { op, arg1: parseInt(arg1, 10) };
+      default:
+        throw new Error(`Unknown op ${op}`);
+    }
+  });
+}
+
 export function part1(input) {
-  return (
-    _.chain(input)
-      // TODO
-      .value()
-  );
+  const program = parseProgram(input);
+  let machine = new ClockCircuit({ program });
+  let sum = 0;
+
+  for (let i = 0; i < 220; ++i) {
+    machine = machine.tick();
+    if ((machine.clock - 20) % 40 === 0) {
+      console.log(`${machine.clock} * ${machine.x}`);
+      sum += machine.x * machine.clock;
+    }
+  }
+  return sum;
 }
 
 export function part2(input) {

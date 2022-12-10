@@ -110,9 +110,30 @@ export function part1(input) {
 }
 
 export function part2(input) {
-  return (
-    _.chain(input)
-      // TODO
-      .value()
-  );
+  const crt = [
+    _.repeat(".", 40),
+    _.repeat(".", 40),
+    _.repeat(".", 40),
+    _.repeat(".", 40),
+    _.repeat(".", 40),
+    _.repeat(".", 40),
+  ];
+
+  const program = parseProgram(input);
+  let machine = new ClockCircuit({ program });
+
+  const render = _.map(crt, (row) => {
+    return _.map(row, (dot, col) => {
+      const { x } = machine;
+      machine = machine.tick();
+
+      if (x - 1 <= col && col <= x + 1) {
+        return "#";
+      }
+
+      return " ";
+    });
+  });
+
+  return _.map(render, (row) => _.join(row, ""));
 }

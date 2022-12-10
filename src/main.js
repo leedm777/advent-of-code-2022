@@ -19,12 +19,16 @@ async function main() {
         const begin1 = process.hrtime.bigint();
         const soln1 = solver.part1(puzzleInput);
         const millis1 = (process.hrtime.bigint() - begin1) / 1000000n;
-        console.log(`  part1: ${soln1} (${millis1} ms)`);
+        console.log(
+          `  part1: ${JSON.stringify(soln1, null, 2)} (${millis1} ms)`
+        );
 
         const begin2 = process.hrtime.bigint();
         const soln2 = solver.part2(puzzleInput);
         const millis2 = (process.hrtime.bigint() - begin2) / 1000000n;
-        console.log(`  part2: ${soln2} (${millis2} ms)`);
+        console.log(
+          `  part2: ${JSON.stringify(soln2, null, 2)} (${millis2} ms)`
+        );
       } catch (err) {
         // ENOENT means the input file is missing; skip
         if (err.code === "ENOENT") {

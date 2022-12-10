@@ -128,7 +128,7 @@ export function part2(input) {
       machine = machine.tick();
 
       if (x - 1 <= col && col <= x + 1) {
-        return "#";
+        return "█";
       }
 
       return " ";

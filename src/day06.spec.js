@@ -1,5 +1,6 @@
 import { part1, part2 } from "./day06";
 import { readInput } from "./aoc";
+import _ from "lodash";
 
 const puzzleInput = readInput("./src/day06.txt");
 const exampleInput = [
@@ -21,22 +22,22 @@ const exampleInput2 = [
 describe("day06", () => {
   describe("part 1", () => {
     it("should work with the sample", () => {
-      const actual = part1(exampleInput);
+      const actual = _.map(exampleInput, part1);
       expect(actual).toStrictEqual([7, 5, 6, 10, 11]);
     });
     it("should work with the puzzle input", () => {
-      const actual = part1(puzzleInput);
+      const actual = _.map(puzzleInput, part1);
       expect(actual).toStrictEqual([1723]);
     });
   });
 
   describe("part 2", () => {
     it("should work with the sample", () => {
-      const actual = part2(exampleInput2);
+      const actual = _.map(exampleInput2, part2);
       expect(actual).toStrictEqual([19, 23, 23, 29, 26]);
     });
     it("should work with the puzzle input", () => {
-      const actual = part2(puzzleInput);
+      const actual = _.map(puzzleInput, part2);
       expect(actual).toStrictEqual([3708]);
     });
   });

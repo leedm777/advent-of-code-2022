@@ -15,9 +15,9 @@ const findStartOfPacket = findStart(4);
 const findStartOfMessage = findStart(14);
 
 export function part1(input) {
-  return _.map(input, findStartOfPacket);
+  return findStartOfPacket(input);
 }
 
 export function part2(input) {
-  return _.map(input, findStartOfMessage);
+  return findStartOfMessage(input);
 }

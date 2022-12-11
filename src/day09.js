@@ -58,6 +58,9 @@ function moveNextKnot(headPositions) {
     headPositions,
     ({ past, current }, headPosition) => {
       const next = moveTail(current, headPosition);
+      if (_.isEqual(next, current)) {
+        return { past, current };
+      }
       return {
         past: [...past, next],
         current: next,

@@ -59,7 +59,7 @@ describe("day11", () => {
     it("should work with the puzzle input", () => {
       const actual = part2(puzzleInput);
       expect(actual).toBeGreaterThan(2713310158);
-      expect(actual).toStrictEqual();
+      expect(actual).toStrictEqual(11309046332);
     });
   });
 });

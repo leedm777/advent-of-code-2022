@@ -92,9 +92,13 @@ export function inspect(monkeys, n, lowerWorry) {
   monkey.items = [];
   monkey.numInspections += items.length;
 
+  const mod = _(monkeys)
+    .map("divBy")
+    .reduce((x, y) => x * y, 1n);
+
   const [trueItems, falseItems] = _(items)
     .map((i) => monkey.op(i))
-    .map((i) => (lowerWorry ? i / 3n : i))
+    .map((i) => (lowerWorry ? i / 3n : i % mod))
     .partition((i) => i % monkey.divBy === 0n)
     .value();
 

@@ -38,8 +38,8 @@ describe("day11", () => {
       const monkeys = parseMonkeys(exampleInput);
       inspect(monkeys, 0, true);
       expect(monkeys[0].items).toStrictEqual([]);
-      expect(monkeys[2].items).toStrictEqual([79n, 60n, 97n]);
-      expect(monkeys[3].items).toStrictEqual([74n, 500n, 620n]);
+      expect(monkeys[2].items).toStrictEqual([79, 60, 97]);
+      expect(monkeys[3].items).toStrictEqual([74, 500, 620]);
     });
     it("should work with the sample", () => {
       const actual = part1(exampleInput);

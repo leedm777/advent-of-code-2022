@@ -1,4 +1,4 @@
-import { part1, part2, ClockCircuit, parseProgram, tickBy } from "./day10";
+import { part1, part2, ClockCircuit } from "./day10";
 import { readInput } from "./aoc";
 
 const puzzleInput = readInput("./src/day10.txt");
@@ -27,58 +27,6 @@ describe("day10", () => {
       expect(cycle5.x).toStrictEqual(-1);
     });
 
-    it.skip("should work at the checkpoints", async () => {
-      const program = parseProgram(exampleInput);
-      const machine = new ClockCircuit({ program });
-
-      const p1 = tickBy(machine, 20);
-      expect(p1).toStrictEqual(
-        expect.objectContaining({
-          clock: 20,
-          x: 21,
-        })
-      );
-
-      const p2 = tickBy(p1, 40);
-      expect(p2).toStrictEqual(
-        expect.objectContaining({
-          clock: 60,
-          x: 19,
-        })
-      );
-
-      const p3 = tickBy(p2, 40);
-      expect(p3).toStrictEqual(
-        expect.objectContaining({
-          clock: 100,
-          x: 18,
-        })
-      );
-
-      const p4 = tickBy(p3, 40);
-      expect(p4).toStrictEqual(
-        expect.objectContaining({
-          clock: 140,
-          x: 21,
-        })
-      );
-
-      const p5 = tickBy(p4, 40);
-      expect(p5).toStrictEqual(
-        expect.objectContaining({
-          clock: 180,
-          x: 16,
-        })
-      );
-
-      const p6 = tickBy(p5, 40);
-      expect(p6).toStrictEqual(
-        expect.objectContaining({
-          clock: 220,
-          x: 18,
-        })
-      );
-    });
     it("should work with the sample", () => {
       const actual = part1(exampleInput);
       expect(actual).toStrictEqual(13140);

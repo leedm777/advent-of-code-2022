@@ -36,10 +36,10 @@ describe("day11", () => {
   describe("part 1", () => {
     it("should works after a single inspection", async () => {
       const monkeys = parseMonkeys(exampleInput);
-      inspect(monkeys, 0);
+      inspect(monkeys, 0, true);
       expect(monkeys[0].items).toStrictEqual([]);
-      expect(monkeys[2].items).toStrictEqual([79, 60, 97]);
-      expect(monkeys[3].items).toStrictEqual([74, 500, 620]);
+      expect(monkeys[2].items).toStrictEqual([79n, 60n, 97n]);
+      expect(monkeys[3].items).toStrictEqual([74n, 500n, 620n]);
     });
     it("should work with the sample", () => {
       const actual = part1(exampleInput);
@@ -54,10 +54,11 @@ describe("day11", () => {
   describe("part 2", () => {
     it("should work with the sample", () => {
       const actual = part2(exampleInput);
-      expect(actual).toStrictEqual();
+      expect(actual).toStrictEqual(2713310158);
     });
     it("should work with the puzzle input", () => {
       const actual = part2(puzzleInput);
+      expect(actual).toBeGreaterThan(2713310158);
       expect(actual).toStrictEqual();
     });
   });

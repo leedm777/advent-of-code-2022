@@ -4,17 +4,37 @@ import assert from "assert";
 function parseOperation(s) {
   assert(_.startsWith(s, "new = "));
   const [, opStr] = _.split(s, " = ");
-  const fnStr = `(old) => (${opStr})`;
+  // const fnStr = `(old) => (${opStr})`;
   // Yes, it's dangerous. But at least I don't have to build a parser
   // eslint-disable-next-line no-eval
-  return eval(fnStr);
+  // return eval(fnStr);
+
+  const [lhsStr, op, rhsStr] = _.split(opStr, " ");
+
+  switch (op) {
+    case "*":
+      return (i) => {
+        const lhs = lhsStr === "old" ? i : BigInt(lhsStr);
+        const rhs = rhsStr === "old" ? i : BigInt(rhsStr);
+        return lhs * rhs;
+      };
+    case "+":
+      return (i) => {
+        const lhs = lhsStr === "old" ? i : BigInt(lhsStr);
+        const rhs = rhsStr === "old" ? i : BigInt(rhsStr);
+        return lhs + rhs;
+      };
+    default:
+      throw new Error(`Unknown op ${op}`);
+  }
 }
 
 function parseTest(s) {
   const [div, by, num] = _.split(s, " ");
   assert.deepStrictEqual(div, "divisible");
   assert.deepStrictEqual(by, "by");
-  return parseInt(num, 10);
+  const i = parseInt(num, 10);
+  return BigInt(i);
 }
 
 function parseThrowTo(s) {
@@ -36,6 +56,7 @@ function parseMonkey(lines, n) {
   const items = _(itemsStr)
     .split(", ")
     .map((s) => parseInt(s, 10))
+    .map((i) => BigInt(i))
     .value();
 
   const [opLabel, opStr] = pairs[2];
@@ -65,7 +86,7 @@ function parseMonkey(lines, n) {
   };
 }
 
-export function inspect(monkeys, n) {
+export function inspect(monkeys, n, lowerWorry) {
   const monkey = monkeys[n];
   const { items } = monkey;
   monkey.items = [];
@@ -73,8 +94,8 @@ export function inspect(monkeys, n) {
 
   const [trueItems, falseItems] = _(items)
     .map((i) => monkey.op(i))
-    .map((i) => Math.floor(i / 3))
-    .partition((i) => i % monkey.divBy === 0)
+    .map((i) => (lowerWorry ? i / 3n : i))
+    .partition((i) => i % monkey.divBy === 0n)
     .value();
 
   const { trueMonkey, falseMonkey } = monkey;
@@ -93,12 +114,12 @@ export function parseMonkeys(input) {
   return _(input).chunk(7).map(parseMonkey).value();
 }
 
-export function part1(input) {
+export function part1(input, numRounds = 20, lowerWorry = true) {
   const monkeys = parseMonkeys(input);
 
-  for (let round = 0; round < 20; ++round) {
+  for (let round = 0; round < numRounds; ++round) {
     for (let monkeyNum = 0; monkeyNum < monkeys.length; ++monkeyNum) {
-      inspect(monkeys, monkeyNum);
+      inspect(monkeys, monkeyNum, lowerWorry);
     }
   }
 
@@ -110,9 +131,5 @@ export function part1(input) {
 }
 
 export function part2(input) {
-  return (
-    _.chain(input)
-      // TODO
-      .value()
-  );
+  return part1(input, 10000, false);
 }

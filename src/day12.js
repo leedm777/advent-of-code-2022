@@ -25,6 +25,21 @@ class HillGraph {
     });
   }
 
+  getReverseNeighbors([row, col]) {
+    const height = this.hills[row][col];
+    const neighbors = [
+      [row - 1, col],
+      [row + 1, col],
+      [row, col - 1],
+      [row, col + 1],
+    ];
+
+    return _.filter(neighbors, (n) => {
+      const neighborHeight = _.get(this.hills, n, -Infinity);
+      return neighborHeight >= height - 1;
+    });
+  }
+
   keyify([row, col]) {
     return `[${row}][${col}]`;
   }
@@ -73,7 +88,8 @@ function solveMaze(maze) {
   return findPath({
     graph: maze,
     start: maze.start,
-    goal: maze.goal,
+    goalFn: (c) => _.isEqual(c, maze.goal),
+    neighborsFn: (c) => maze.getNeighbors(c),
     h: manhattanHeuristic(maze.goal),
     emitter,
   });
@@ -86,5 +102,13 @@ export function part1(input) {
 }
 
 export function part2(input) {
-  return input;
+  const maze = parseMaze(input);
+  const path = findPath({
+    graph: maze,
+    start: maze.goal,
+    goalFn: (c) => _.get(maze.hills, c, Infinity) === 0,
+    neighborsFn: (c) => maze.getReverseNeighbors(c),
+  });
+
+  return path.length - 1;
 }

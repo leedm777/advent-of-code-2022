@@ -100,14 +100,15 @@ export function manhattanHeuristic(goal) {
  *
  * @param graph - Graph of maze positions.
  * @param start - Position we are starting from
- * @param goal - Position we want to get to
+ * @param goalFn - Function testing if we've reached our goal
  * @param h - estimates the cost to reach goal from node n.
  * @param emitter - emitter to get graph updates
  */
 export function findPath({
   graph,
   start,
-  goal,
+  goalFn,
+  neighborsFn,
   h = dijkstraHeuristic,
   emitter = new EventEmitter(),
 }) {
@@ -120,14 +121,14 @@ export function findPath({
   cheapestPathFromStart[graph.keyify(start)] = 0;
 
   let current = open.extract();
-  while (current && !_.isEqual(current, goal)) {
+  while (current && !goalFn(current)) {
     emitter.emit(
       "visit",
       current,
       _.map(open.heap, "node"),
       _.keys(cheapestPathFromStart)
     );
-    const neighbors = graph.getNeighbors(current);
+    const neighbors = neighborsFn(current);
     for (const neighbor of neighbors) {
       const cost =
         _.get(cheapestPathFromStart, graph.keyify(current), Infinity) +

@@ -3,11 +3,16 @@ import assert from "assert";
 
 function parseOperation(s) {
   assert(_.startsWith(s, "new = "));
-  const [, opStr] = _.split(s, " = ");
-  const fnStr = `(old) => (${opStr})`;
-  // Yes, it's dangerous. But at least I don't have to build a parser
-  // eslint-disable-next-line no-eval
-  return eval(fnStr);
+  const [, fnStr] = _.split(s, " = ");
+  const [lhs, opStr, rhs] = _.split(fnStr, " ");
+  const op = opStr === "*" ? _.multiply : _.add;
+  assert.deepStrictEqual(lhs, "old");
+  if (rhs === "old") {
+    return (i) => op(i, i);
+  }
+
+  const j = parseInt(rhs, 10);
+  return (i) => op(i, j);
 }
 
 function parseTest(s) {

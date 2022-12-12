@@ -98,6 +98,17 @@ function solveMaze(maze) {
 export function part1(input) {
   const maze = parseMaze(input);
   const path = solveMaze(maze);
+
+  // const map = _(path)
+  //   .reduce((m, c) => _.set(m, c, "X"), [])
+  //   .map((row, rowNum) =>
+  //     _(row)
+  //       .map((cell, colNum) => (cell ? "█" : input[rowNum].charAt(colNum)))
+  //       .join("")
+  //   )
+  //   .join("\n");
+  // console.log(map);
+
   return path.length - 1;
 }
 
@@ -109,6 +120,16 @@ export function part2(input) {
     goalFn: (c) => _.get(maze.hills, c, Infinity) === 0,
     neighborsFn: (c) => maze.getReverseNeighbors(c),
   });
+
+  // const map = _(path)
+  //   .reduce((m, c) => _.set(m, c, "X"), [])
+  //   .map((row, rowNum) =>
+  //     _(row)
+  //       .map((cell, colNum) => (cell ? "█" : input[rowNum].charAt(colNum)))
+  //       .join("")
+  //   )
+  //   .join("\n");
+  // console.log(map);
 
   return path.length - 1;
 }

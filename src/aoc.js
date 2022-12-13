@@ -1,6 +1,5 @@
 import fs from "fs";
 import _ from "lodash";
-import { EventEmitter } from "events";
 import assert from "assert";
 
 export function readInput(filename) {
@@ -107,10 +106,9 @@ export function manhattanHeuristic(goal) {
  *  - keyify: (T) -> string - Converts a node into a string to use as a key
  *
  * @param graph Graph of the maze to solve.
- * @param {EventEmitter} emitter Emitter to spy on the graph progress.
  * @return {Array} Array of coordinates with the path found from start to goal.
  */
-export function findPath(graph, emitter = new EventEmitter()) {
+export function findPath(graph) {
   const open = new MinHeap();
   open.insert(graph.h(graph.start), graph.start);
   const cameFrom = {};
@@ -125,7 +123,6 @@ export function findPath(graph, emitter = new EventEmitter()) {
 
   let current = open.extract();
   while (current && !graph.isGoal(current)) {
-    emitter.emit("visit", current, _.map(open.heap, "node"), _.keys(g));
     const neighbors = graph.getNeighbors(current);
     for (const neighbor of neighbors) {
       const cost =

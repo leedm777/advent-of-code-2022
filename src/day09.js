@@ -1,30 +1,27 @@
 import _ from "lodash";
 
 function computeHeadPositions(input) {
-  const singleMoves = _.reduce(
-    input,
-    (singleMoves, move) => {
+  const { past: headPositions } = _.chain(input)
+    .reduce((singleMoves, move) => {
       const [dir, distStr] = _.split(move, " ");
       const dist = parseInt(distStr, 10);
       return `${singleMoves}${_.repeat(dir, dist)}`;
-    },
-    ""
-  );
+    }, "")
+    .reduce(
+      ({ past, current }, move) => {
+        const next = moveHead(current, move);
+        return {
+          past: [...past, next],
+          current: next,
+        };
+      },
+      {
+        past: [{ x: 0, y: 0 }],
+        current: { x: 0, y: 0 },
+      }
+    )
+    .value();
 
-  const { past: headPositions } = _.reduce(
-    singleMoves,
-    ({ past, current }, move) => {
-      const next = moveHead(current, move);
-      return {
-        past: [...past, next],
-        current: next,
-      };
-    },
-    {
-      past: [{ x: 0, y: 0 }],
-      current: { x: 0, y: 0 },
-    }
-  );
   return headPositions;
 }
 

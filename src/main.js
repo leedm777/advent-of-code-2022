@@ -1,9 +1,29 @@
 import _ from "lodash";
 import { readInput } from "./aoc.js";
+import { Command } from "commander";
 
-async function main() {
+const program = new Command();
+
+program
+  .name("advent-of-code-2022")
+  .description("AoC 2022 Solutions")
+  .option(
+    "--only <days>",
+    "Comma seperated list of days to run",
+    (opt) =>
+      _(opt)
+        .split(",")
+        .map((s) => parseInt(s, 10))
+        .value(),
+    _.range(1, 26)
+  );
+
+async function main(argv) {
+  program.parse(argv);
+  const { only } = program.opts();
+
   return _.reduce(
-    _.range(1, 26),
+    only,
     async (prior, day) => {
       await prior;
 
@@ -41,7 +61,7 @@ async function main() {
   );
 }
 
-main().catch((err) =>
+main(process.argv).catch((err) =>
   process.nextTick(() => {
     throw err;
   })

@@ -56,5 +56,18 @@ export function part1(input) {
 }
 
 export function part2(input) {
-  return input;
+  const divider1 = [[2]];
+  const divider2 = [[6]];
+  return _(input)
+    .compact()
+    .map(JSON.parse)
+    .concat([divider1, divider2])
+    .thru((packets) => packets.sort(compare))
+    .map((packet, idx) => {
+      if (_.isEqual(packet, divider1) || _.isEqual(packet, divider2)) {
+        return idx + 1;
+      }
+      return 1;
+    })
+    .reduce(_.multiply);
 }

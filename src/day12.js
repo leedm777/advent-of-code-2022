@@ -1,13 +1,13 @@
 import _ from "lodash";
-import { findPath, manhattanHeuristic } from "./aoc.js";
-import { EventEmitter } from "events";
+import { dijkstraHeuristic, findPath, manhattanHeuristic } from "./aoc.js";
 
-class HillGraph {
+class UphillGraph {
   constructor({ hills, start, goal }) {
     this.getNeighborDistance = _.constant(1);
     this.hills = hills;
     this.start = start;
     this.goal = goal;
+    this.h = manhattanHeuristic(goal);
   }
 
   getNeighbors([row, col]) {
@@ -25,19 +25,8 @@ class HillGraph {
     });
   }
 
-  getReverseNeighbors([row, col]) {
-    const height = this.hills[row][col];
-    const neighbors = [
-      [row - 1, col],
-      [row + 1, col],
-      [row, col - 1],
-      [row, col + 1],
-    ];
-
-    return _.filter(neighbors, (n) => {
-      const neighborHeight = _.get(this.hills, n, -Infinity);
-      return neighborHeight >= height - 1;
-    });
+  isGoal(coord) {
+    return _.isEqual(coord, this.goal);
   }
 
   keyify([row, col]) {
@@ -76,60 +65,54 @@ function parseMaze(input) {
     });
   });
 
-  return new HillGraph({ hills, start, goal });
-}
-
-function solveMaze(maze) {
-  const emitter = new EventEmitter();
-  // emitter.on("visit", (current, open, visited) => {
-  //   console.log(JSON.stringify({ current, open, visited }, null, 2));
-  // });
-
-  return findPath({
-    graph: maze,
-    start: maze.start,
-    goalFn: (c) => _.isEqual(c, maze.goal),
-    neighborsFn: (c) => maze.getNeighbors(c),
-    h: manhattanHeuristic(maze.goal),
-    emitter,
-  });
+  return { hills, start, goal };
 }
 
 export function part1(input) {
-  const maze = parseMaze(input);
-  const path = solveMaze(maze);
-
-  // const map = _(path)
-  //   .reduce((m, c) => _.set(m, c, "X"), [])
-  //   .map((row, rowNum) =>
-  //     _(row)
-  //       .map((cell, colNum) => (cell ? "█" : input[rowNum].charAt(colNum)))
-  //       .join("")
-  //   )
-  //   .join("\n");
-  // console.log(map);
+  const { hills, start, goal } = parseMaze(input);
+  const graph = new UphillGraph({ hills, start, goal });
+  const path = findPath(graph);
 
   return path.length - 1;
 }
 
-export function part2(input) {
-  const maze = parseMaze(input);
-  const path = findPath({
-    graph: maze,
-    start: maze.goal,
-    goalFn: (c) => _.get(maze.hills, c, Infinity) === 0,
-    neighborsFn: (c) => maze.getReverseNeighbors(c),
-  });
+/**
+ * Since there are multiple starting points, we'll solve the maze in reverse
+ * looking for the first "starting point" we come to.
+ */
+class DownhillGraph extends UphillGraph {
+  constructor({ hills, goal }) {
+    super({
+      hills,
+      start: goal,
+    });
+    this.h = dijkstraHeuristic;
+  }
 
-  // const map = _(path)
-  //   .reduce((m, c) => _.set(m, c, "X"), [])
-  //   .map((row, rowNum) =>
-  //     _(row)
-  //       .map((cell, colNum) => (cell ? "█" : input[rowNum].charAt(colNum)))
-  //       .join("")
-  //   )
-  //   .join("\n");
-  // console.log(map);
+  getNeighbors([row, col]) {
+    const height = this.hills[row][col];
+    const neighbors = [
+      [row - 1, col],
+      [row + 1, col],
+      [row, col - 1],
+      [row, col + 1],
+    ];
+
+    return _.filter(neighbors, (n) => {
+      const neighborHeight = _.get(this.hills, n, -Infinity);
+      return neighborHeight >= height - 1;
+    });
+  }
+
+  isGoal(coord) {
+    return _.get(this.hills, coord, -Infinity) === 0;
+  }
+}
+
+export function part2(input) {
+  const { hills, goal } = parseMaze(input);
+  const graph = new DownhillGraph({ hills, goal });
+  const path = findPath(graph);
 
   return path.length - 1;
 }

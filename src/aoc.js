@@ -86,7 +86,7 @@ export class MinHeap {
   }
 }
 
-function dijkstraHeuristic() {
+export function dijkstraHeuristic() {
   return 0;
 }
 
@@ -98,50 +98,46 @@ export function manhattanHeuristic(goal) {
  * Implementation of A* from the Wikipedia algo
  * see [](https://en.wikipedia.org/wiki/A*_search_algorithm#Pseudocode)
  *
- * @param graph - Graph of maze positions.
- * @param start - Position we are starting from
- * @param goalFn - Function testing if we've reached our goal
- * @param h - estimates the cost to reach goal from node n.
- * @param emitter - emitter to get graph updates
+ * The Graph has the following interface:
+ *  - start: T - Starting node
+ *  - isGoal: (T) -> bool - Returns true if a node is the goal
+ *  - h: (T) -> Number - Heuristic to optimize the path, if possible
+ *  - getNeighbors: (T) -> Array<T> - Function to get the neighbors of a Node
+ *  - getNeighborDistance: (T) -> Number - Returns distance to neighbor
+ *  - keyify: (T) -> string - Converts a node into a string to use as a key
+ *
+ * @param graph Graph of the maze to solve.
+ * @param {EventEmitter} emitter Emitter to spy on the graph progress.
+ * @return {Array} Array of coordinates with the path found from start to goal.
  */
-export function findPath({
-  graph,
-  start,
-  goalFn,
-  neighborsFn,
-  h = dijkstraHeuristic,
-  emitter = new EventEmitter(),
-}) {
+export function findPath(graph, emitter = new EventEmitter()) {
   const open = new MinHeap();
-  open.insert(h(start), start);
-  const cameFrom = new Map();
+  open.insert(graph.h(graph.start), graph.start);
+  const cameFrom = {};
 
   // g(n) -> cost of the cheapest path from start to n currently known.
-  const cheapestPathFromStart = [];
-  cheapestPathFromStart[graph.keyify(start)] = 0;
+  const g = {};
+  const setCost = (node, cost) => {
+    g[graph.keyify(node)] = cost;
+  };
+  const getCost = (node) => _.get(g, graph.keyify(node), Infinity);
+  setCost(graph.start, 0);
 
   let current = open.extract();
-  while (current && !goalFn(current)) {
-    emitter.emit(
-      "visit",
-      current,
-      _.map(open.heap, "node"),
-      _.keys(cheapestPathFromStart)
-    );
-    const neighbors = neighborsFn(current);
+  while (current && !graph.isGoal(current)) {
+    emitter.emit("visit", current, _.map(open.heap, "node"), _.keys(g));
+    const neighbors = graph.getNeighbors(current);
     for (const neighbor of neighbors) {
       const cost =
-        _.get(cheapestPathFromStart, graph.keyify(current), Infinity) +
-        graph.getNeighborDistance(current, neighbor);
+        getCost(current) + graph.getNeighborDistance(current, neighbor);
       assert(cost < Infinity, `Should have cost for node ${current}`);
-      if (
-        cost < _.get(cheapestPathFromStart, graph.keyify(neighbor), Infinity)
-      ) {
-        cameFrom.set(graph.keyify(neighbor), current);
-        cheapestPathFromStart[graph.keyify(neighbor)] = cost;
+      if (cost < getCost(neighbor)) {
+        // new path to the neighbor
+        cameFrom[graph.keyify(neighbor)] = current;
+        setCost(neighbor, cost);
         // f(n) -> current best guess as to how short a path from start to
         // finish can be if it goes through n
-        const f = cost + h(neighbor);
+        const f = cost + graph.h(neighbor);
         open.insert(f, neighbor);
       }
     }
@@ -153,7 +149,7 @@ export function findPath({
   const path = [];
   while (current) {
     path.unshift(current);
-    current = cameFrom.get(graph.keyify(current));
+    current = cameFrom[graph.keyify(current)];
   }
 
   return path;

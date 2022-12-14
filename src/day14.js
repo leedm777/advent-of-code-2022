@@ -8,7 +8,7 @@ class Cave {
     this.grid = [];
     this.minRow = this.maxRow = sandEnters[0];
     this.minCol = this.maxCol = sandEnters[1];
-    this.set(sandEnters, "+");
+    // this.set(sandEnters, "+"); // need to be able to fill this space for pt2
   }
 
   draw(start, end, ch) {
@@ -129,5 +129,28 @@ export function part1(input) {
 }
 
 export function part2(input) {
-  return input;
+  const paths = _.map(input, parsePath);
+  const cave = new Cave();
+  _.forEach(paths, (path) => {
+    for (let i = 1; i < path.length; ++i) {
+      cave.draw(path[i - 1], path[i], "#");
+    }
+  });
+
+  const floorRow = cave.maxRow + 2;
+  cave.draw(
+    [floorRow, 0],
+    [floorRow, sandEnters[1] + 2 * cave.maxRow], // hopefully enough?
+    "#"
+  );
+
+  while (cave.dropSand()) {
+    // process.stdout.write("\x1B[H");
+    // console.log(cave.toString());
+  }
+
+  return _(cave.grid)
+    .map((row) => _.map(row, (ch) => (ch === "o" ? 1 : 0)))
+    .map(_.sum)
+    .sum();
 }

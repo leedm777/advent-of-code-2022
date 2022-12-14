@@ -1,6 +1,7 @@
 import _ from "lodash";
 
 const sandEnters = [0, 500];
+Object.freeze(sandEnters);
 
 class Cave {
   constructor() {
@@ -30,6 +31,10 @@ class Cave {
     }
   }
 
+  get(coord) {
+    return _.get(this.grid, coord, " ");
+  }
+
   set([row, col], ch) {
     this.minRow = Math.min(this.minRow, row);
     this.maxRow = Math.max(this.maxRow, row);
@@ -52,6 +57,45 @@ class Cave {
 
     return str;
   }
+
+  dropSand() {
+    let [row, col] = sandEnters;
+
+    while (true) {
+      // falls down one step if possible
+      if (this.get([row + 1, col]) === " " && row <= this.maxRow) {
+        ++row;
+        continue;
+      }
+
+      // instead move diagonally one step down and to the left
+      if (this.get([row + 1, col - 1]) === " " && row <= this.maxRow) {
+        ++row;
+        --col;
+        continue;
+      }
+
+      // instead move diagonally one step down and to the right
+      if (this.get([row + 1, col + 1]) === " " && row <= this.maxRow) {
+        ++row;
+        ++col;
+        continue;
+      }
+
+      break;
+    }
+
+    if (row > this.maxRow) {
+      return false;
+    }
+
+    if (this.get([row, col]) !== " ") {
+      return false;
+    }
+
+    this.set([row, col], "o");
+    return true;
+  }
 }
 
 function parsePath(str) {
@@ -73,9 +117,15 @@ export function part1(input) {
     }
   });
 
-  console.log(cave.toString());
+  while (cave.dropSand()) {
+    // process.stdout.write("\x1B[H");
+    // console.log(cave.toString());
+  }
 
-  return paths;
+  return _(cave.grid)
+    .map((row) => _.map(row, (ch) => (ch === "o" ? 1 : 0)))
+    .map(_.sum)
+    .sum();
 }
 
 export function part2(input) {

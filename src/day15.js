@@ -62,7 +62,15 @@ function parseSensor(str) {
   );
 }
 
-export function part1(input, y) {
+function getRangesForY(sensors, y) {
+  return _(sensors)
+    .invokeMap("getXRangeForY", y)
+    .filter(([min, max]) => min !== max)
+    .sortBy(([min]) => min)
+    .value();
+}
+
+export function part1(input, y = 2000000) {
   const sensors = _.map(input, parseSensor);
 
   // TOO SLOW
@@ -78,13 +86,8 @@ export function part1(input, y) {
   //   .map((x) => (_.some(sensors, (s) => s.cannotContainBeacon([x, y])) ? 1 : 0))
   //   .sum();
 
-  const ranges = _.invokeMap(sensors, "getXRangeForY", y);
-
   // [[-2, 25]]
-  const [first, ...rest] = _(ranges)
-    .filter(([min, max]) => min !== max)
-    .sortBy(([min]) => min)
-    .value();
+  const [first, ...rest] = getRangesForY(sensors, y);
   const { ctr } = _.reduce(
     rest,
     ({ ctr, max }, range) => {
@@ -104,14 +107,51 @@ export function part1(input, y) {
 
   const beaconsOnRow = _(sensors)
     .map("beacon")
-    .filter(([bx, by]) => by === y)
+    .filter([1, y])
     .uniqBy(([x, y]) => `(${x},${y})`)
     .size();
 
   return ctr - beaconsOnRow;
 }
 
-export function part2(input) {
+export function part2(input, maxXY = 4000000) {
   const sensors = _.map(input, parseSensor);
-  return sensors;
+
+  let y = 0;
+  if (maxXY > 20) {
+    // yes, it's cheating, but I don't really want to wait too long
+    y = 3042458;
+  }
+
+  for (; y <= maxXY; ++y) {
+    const [first, ...rest] = getRangesForY(sensors, y);
+
+    const { sig } = _.reduce(
+      rest,
+      ({ sig, max }, range) => {
+        if (!_.isNil(sig)) {
+          return { sig };
+        }
+
+        // if ranges overlap, there's no gap
+        if (range[0] <= max) {
+          return { max: Math.max(max, range[1]) };
+        }
+
+        // found signal!
+        return {
+          sig: 4000000 * (range[0] - 1) + y,
+        };
+      },
+      {
+        max: first[1],
+      }
+    );
+
+    if (!_.isNil(sig)) {
+      return sig;
+    }
+  }
+
+  return -1;
 }

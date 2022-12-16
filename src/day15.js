@@ -81,12 +81,18 @@ export function part1(input, y) {
   const ranges = _.invokeMap(sensors, "getXRangeForY", y);
 
   // [[-2, 25]]
-  const [first, ...rest] = _.sortBy(ranges, ([min]) => min);
+  const [first, ...rest] = _(ranges)
+    .filter(([min, max]) => min !== max)
+    .sortBy(([min]) => min)
+    .value();
   const { ctr } = _.reduce(
     rest,
     ({ ctr, max }, range) => {
+      if (range[1] <= max) {
+        return { ctr, max };
+      }
       return {
-        ctr: range[1] - Math.max(max, range[0]),
+        ctr: ctr + range[1] - Math.max(max, range[0]),
         max: Math.max(max, range[1]),
       };
     },
@@ -96,7 +102,13 @@ export function part1(input, y) {
     }
   );
 
-  return ctr;
+  const beaconsOnRow = _(sensors)
+    .map("beacon")
+    .filter(([bx, by]) => by === y)
+    .uniqBy(([x, y]) => `(${x},${y})`)
+    .size();
+
+  return ctr - beaconsOnRow;
 }
 
 export function part2(input) {

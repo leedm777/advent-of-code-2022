@@ -33,11 +33,11 @@ describe("day15", () => {
 
   describe("part 2", () => {
     it("should work with the sample", () => {
-      const actual = part2(exampleInput);
-      expect(actual).toStrictEqual();
+      const actual = part2(exampleInput, 20);
+      expect(actual).toStrictEqual(56000011);
     });
     it("should work with the puzzle input", () => {
-      const actual = part2(puzzleInput);
+      const actual = part2(puzzleInput, 4000000);
       expect(actual).toStrictEqual();
     });
   });

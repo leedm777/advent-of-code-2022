@@ -8,8 +8,8 @@
 # Puzzles are released at midnight Eastern time
 export TZ=America/New_York
 
-year=$(date +%Y)
-day=$(date +%d)
+day=${1:-$(date +%d)}
+year=${2:-$(date +%Y)}
 input=./src/day${day}.txt
 url=https://adventofcode.com/${year}/day/$((10#${day}))
 
@@ -33,19 +33,13 @@ cat <<EOF > src/day${day}.js
 import _ from "lodash";
 
 export function part1(input) {
-  return (
-    _.chain(input)
-      // TODO
-      .value()
-  );
+  // TODO
+  return _.map(input);
 }
 
 export function part2(input) {
-  return (
-    _.chain(input)
-      // TODO
-      .value()
-  );
+  // TODO
+  return _.map(input);
 }
 EOF
 

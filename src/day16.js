@@ -2,6 +2,8 @@ import _ from "lodash";
 import { dijkstraHeuristic, findPath } from "./aoc.js";
 import assert from "assert";
 
+const TIME_LIMIT = 30;
+
 function parseLine(line) {
   const re =
     /Valve (?<valveName>[A-Z][A-Z]) has flow rate=(?<flowRate>\d+); tunnels? leads? to valves? (?<leadTo>.*)*/;
@@ -21,6 +23,7 @@ class Valves {
       valveName: "AA",
       // assume any flowRate of 0 is already open
       closedValves: _(valves).filter("flowRate").map("valveName").value(),
+      minute: 0,
     };
     this.h = dijkstraHeuristic;
   }
@@ -29,12 +32,18 @@ class Valves {
     return _.isEmpty(n.closedValves);
   }
 
-  getNeighbors({ valveName, closedValves }) {
+  getNeighbors({ valveName, closedValves, minute }) {
+    if (minute >= TIME_LIMIT) {
+      // Time is up!
+      return [];
+    }
+
     const v = this.valves[valveName];
     assert.ok(v, `Could not find valve ${valveName}`);
     const r = _.map(v.leadTo, (nextValveName) => ({
       valveName: nextValveName,
       closedValves,
+      minute: minute + 1,
     }));
 
     // If this valve is open, close it
@@ -45,6 +54,7 @@ class Valves {
       r.push({
         valveName,
         closedValves: nextClosedValves,
+        minute: minute + 1,
       });
     }
 
@@ -63,10 +73,10 @@ class Valves {
       .sum();
 
     // add 1 for either moving tunnels or opening the valves
-    return oppCost + 1;
+    return (TIME_LIMIT - neighbor.minute) * oppCost + 1;
   }
 
-  keyify({ valveName, closedValves }) {
+  keyify({ valveName, closedValves } = {}) {
     const s = _.sortBy(closedValves);
     s.unshift(valveName);
     return _.join(s, ",");
@@ -80,7 +90,7 @@ export function part1(input) {
   let log = "";
 
   const { totalPressure } = _.reduce(
-    _.zip(path, _.range(0, 30)),
+    _.zip(path, _.range(0, TIME_LIMIT)),
     ({ totalPressure }, [node, minute]) => {
       const closedValves = _.get(node, "closedValves", []);
       const thisPressure = _(valves.valves)
@@ -88,7 +98,7 @@ export function part1(input) {
         .map("flowRate")
         .sum();
 
-      log = `${log}\n${minute + 1}: ${thisPressure}`;
+      log = `${log}\n${minute + 1}: ${thisPressure}: ${valves.keyify(node)}`;
       return {
         totalPressure: totalPressure + thisPressure,
       };

@@ -29,7 +29,7 @@ class Valves {
   }
 
   isGoal(n) {
-    return _.isEmpty(n.closedValves);
+    return _.isEmpty(n.closedValves) || n.minute === TIME_LIMIT;
   }
 
   getNeighbors({ valveName, closedValves, minute }) {

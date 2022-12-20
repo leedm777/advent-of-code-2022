@@ -24,6 +24,7 @@ describe("day16", () => {
     it("should work with the puzzle input", () => {
       const actual = part1(puzzleInput);
       expect(actual).toBeLessThan(6000);
+      expect(actual).toBeLessThan(1755);
       expect(actual).toStrictEqual();
     });
   });

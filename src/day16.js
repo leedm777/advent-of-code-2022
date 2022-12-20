@@ -33,7 +33,7 @@ class Valves {
   }
 
   getNeighbors({ valveName, closedValves, minute }) {
-    if (minute >= TIME_LIMIT) {
+    if (minute > TIME_LIMIT) {
       // Time is up!
       return [];
     }
@@ -77,15 +77,18 @@ class Valves {
   }
 
   keyify({ valveName, closedValves } = {}) {
-    const s = _.sortBy(closedValves);
-    s.unshift(valveName);
-    return _.join(s, ",");
+    const s = _(closedValves).sortBy().join(",");
+    return `${valveName};${s}`;
   }
 }
 
 export function part1(input) {
   const valves = new Valves(_(input).map(parseLine).keyBy("valveName").value());
   const path = findPath(valves);
+
+  if (_.isEmpty(path)) {
+    return 0;
+  }
 
   let log = "";
 

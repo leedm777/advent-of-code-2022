@@ -57,7 +57,7 @@ export function part2(input) {
     [-1, -1, -1]
   );
 
-  const open = [[0, 0, 0]];
+  const open = [[-1, -1, -1]];
   const visited = new Set();
 
   let current;
@@ -71,7 +71,7 @@ export function part2(input) {
       const cell = getNeighborCell(current, d);
 
       // skip if we are off the bottom of the grid
-      if (_.some(cell, (v) => v < 0)) {
+      if (_.some(cell, (v) => v < -1)) {
         continue;
       }
       // of off the top

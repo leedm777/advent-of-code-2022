@@ -19,7 +19,6 @@ function getNeighborCell(cell, direction) {
 }
 
 function setCell(grid, cell) {
-  // eslint-disable-next-line lodash/path-style
   const self = {
     numNeighbors: 0,
     steamed: 0,

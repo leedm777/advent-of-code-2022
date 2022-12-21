@@ -40,7 +40,6 @@ class Cave {
     this.maxRow = Math.max(this.maxRow, row);
     this.minCol = Math.min(this.minCol, col);
     this.maxCol = Math.max(this.maxCol, col);
-    // eslint-disable-next-line lodash/path-style
     _.set(this.grid, [row, col], ch);
   }
 
@@ -48,7 +47,6 @@ class Cave {
     let str = "";
     for (let row = this.minRow; row <= this.maxRow; ++row) {
       for (let col = this.minCol; col <= this.maxCol; ++col) {
-        // eslint-disable-next-line lodash/path-style
         const ch = _.get(this.grid, [row, col], " ");
         str = `${str}${ch}`;
       }

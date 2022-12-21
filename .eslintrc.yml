@@ -20,5 +20,7 @@ env:
 rules:
   prettier/prettier: error
   lodash/chaining: [error, implicit]
+  # mis-fires when accessing multi-dimensional arrays
+  lodash/path-style: off
 parserOptions:
   ecmaVersion: 2020

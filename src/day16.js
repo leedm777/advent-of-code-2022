@@ -111,12 +111,12 @@ export function part1(input) {
     }
   );
 
-  console.log(log);
+  // console.log(log);
 
   return totalPressure;
 }
 
 export function part2(input) {
   const valves = new Valves(_(input).map(parseLine).keyBy("valveName").value());
-  return valves;
+  return valves.length;
 }

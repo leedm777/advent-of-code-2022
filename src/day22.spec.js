@@ -31,7 +31,7 @@ describe("day22", () => {
     });
   });
 
-  describe("part 2", () => {
+  describe.skip("part 2", () => {
     it("should work with the sample", () => {
       const actual = part2(exampleInput);
       expect(actual).toStrictEqual();

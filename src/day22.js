@@ -137,6 +137,5 @@ export function part1(input) {
 }
 
 export function part2(input) {
-  // TODO
-  return _.map(input);
+  return "TODO";
 }

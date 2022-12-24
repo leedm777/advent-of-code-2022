@@ -33,13 +33,11 @@ cat <<EOF > src/day${day}.js
 import _ from "lodash";
 
 export function part1(input) {
-  // TODO
-  return _.map(input);
+  return "TODO";
 }
 
 export function part2(input) {
-  // TODO
-  return _.map(input);
+  return "TODO";
 }
 EOF
 

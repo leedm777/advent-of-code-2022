@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-function mix(n, m) {
+function mod(n, m) {
   let r = n % m;
   if (r < 0) {
     r += m;
@@ -8,39 +8,58 @@ function mix(n, m) {
   return r;
 }
 
-export function part1(input) {
-  const cipher = _.map(input, (s) => ({
-    val: parseInt(s, 10),
-    moved: false,
-  }));
-
-  cipher.toString = () => _(this).map("val").join(",");
-
-  for (let i = 0; i < cipher.length; ) {
-    const { val, moved } = cipher[i];
+function mix(cipher) {
+  const mixed = cipher.mixed;
+  for (let i = 0; i < mixed.length; ) {
+    const { idx, val, moved } = mixed[i];
 
     if (moved) {
       ++i;
       continue;
     }
 
-    const newIndex = mix(i + val - 1, cipher.length - 1) + 1;
-    cipher.splice(i, 1);
-    cipher.splice(newIndex, 0, {
+    const newIndex = mod(i + val - 1, mixed.length - 1) + 1;
+    mixed.splice(i, 1);
+    mixed.splice(newIndex, 0, {
+      idx,
       val,
       moved: true,
     });
     // console.log(JSON.stringify(_.map(cipher, "val")));
   }
+}
 
-  const zeroIndex = _.findIndex(cipher, ({ val }) => val === 0);
+function parseInput(input, decryptionKey = 1) {
+  const orig = _.map(input, (s, idx) => ({
+    val: parseInt(s, 10) * decryptionKey,
+    moved: false,
+    idx,
+  }));
+  return {
+    orig,
+    mixed: orig,
+  };
+}
 
-  const onek = cipher[mix(zeroIndex + 1000, cipher.length)].val;
-  const twok = cipher[mix(zeroIndex + 2000, cipher.length)].val;
-  const threek = cipher[mix(zeroIndex + 3000, cipher.length)].val;
+export function part1(input) {
+  const cipher = parseInput(input);
+
+  mix(cipher);
+  const { mixed } = cipher;
+
+  const zeroIndex = _.findIndex(mixed, ({ val }) => val === 0);
+
+  const onek = mixed[mod(zeroIndex + 1000, mixed.length)].val;
+  const twok = mixed[mod(zeroIndex + 2000, mixed.length)].val;
+  const threek = mixed[mod(zeroIndex + 3000, mixed.length)].val;
   return onek + twok + threek;
 }
 
+const DECRYPTION_KEY = 811589153;
+
 export function part2(input) {
-  return "TODO";
+  const cipher = parseInput(input, DECRYPTION_KEY);
+
+  mix(cipher);
+  return _.map(cipher.mixed, "val");
 }

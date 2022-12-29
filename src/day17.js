@@ -41,28 +41,19 @@ const rocks = [
 ];
 
 class Cave {
+  get height() {
+    return _.max(this.topRocks) + 1;
+  }
+
   constructor(windStr) {
     this.winds = _.map(windStr);
-    this.cavern = new Set();
-    this.height = 0;
+    this.topRocks = _.fill(Array(7), -1);
     this.numRocks = 0;
     this.numWinds = 0;
   }
 
   toString() {
-    let s = "";
-    for (let row = this.height - 1; row >= 0; --row) {
-      for (let col = 0; col < 7; ++col) {
-        if (this.cavern.has(JSON.stringify([row, col]))) {
-          s += "#";
-        } else {
-          s += ".";
-        }
-      }
-      s += "\n";
-    }
-
-    return s;
+    return JSON.stringify(this.topRocks);
   }
 
   placeRock(rock) {
@@ -87,7 +78,7 @@ class Cave {
         }
 
         // hit a rock
-        if (this.cavern.has(JSON.stringify([row, col]))) {
+        if (this.topRocks[col] >= row) {
           return true;
         }
 
@@ -110,7 +101,7 @@ class Cave {
         }
 
         // hit a rock
-        if (this.cavern.has(JSON.stringify([row, col]))) {
+        if (this.topRocks[col] >= row) {
           return true;
         }
 
@@ -132,32 +123,24 @@ class Cave {
       fallenRock = this.fallRock(rock);
     }
 
-    this.height = Math.max(
-      this.height,
-      _(rock)
-        .map(([row]) => row)
-        .max() + 1
-    );
-
     _.forEach(rock, ([row, col]) => {
-      this.cavern.add(JSON.stringify([row, col]));
+      this.topRocks[col] = Math.max(this.topRocks[col], row);
     });
   }
 }
 
-function parseInput(input) {
+export function part1(input) {
   const cave = new Cave(input[0]);
   for (let i = 0; i < 2022; ++i) {
     cave.dropRock();
   }
-  console.log(cave.toString());
-  return cave.height;
-}
-
-export function part1(input) {
-  return parseInput(input);
+  return _.max(cave.topRocks) + 1;
 }
 
 export function part2(input) {
-  return "TODO";
+  const cave = new Cave(input[0]);
+  for (let i = 0; i < 1000000000000; ++i) {
+    cave.dropRock();
+  }
+  return cave.height;
 }

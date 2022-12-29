@@ -1,5 +1,5 @@
 import _ from "lodash";
-import cliProgress from "cli-progress";
+// import cliProgress from "cli-progress";
 
 const rocks = [
   // horizontal bar
@@ -139,18 +139,19 @@ export function part1(input) {
 }
 
 export function part2(input) {
-  const bar1 = new cliProgress.SingleBar(
-    {},
-    cliProgress.Presets.shades_classic
-  );
-
-  const cave = new Cave(input[0]);
-  const TotalRocks = 1000000000000;
-  bar1.start(TotalRocks, 0);
-  for (let i = 0; i < TotalRocks; ++i) {
-    cave.dropRock();
-    bar1.update(i);
-  }
-  bar1.stop();
-  return cave.height;
+  // const bar1 = new cliProgress.SingleBar(
+  //   {},
+  //   cliProgress.Presets.shades_classic
+  // );
+  //
+  // const cave = new Cave(input[0]);
+  // const TotalRocks = 1000000000000;
+  // bar1.start(TotalRocks, 0);
+  // for (let i = 0; i < TotalRocks; ++i) {
+  //   cave.dropRock();
+  //   bar1.update(i);
+  // }
+  // bar1.stop();
+  // return cave.height;
+  return "TODO";
 }

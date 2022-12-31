@@ -1,5 +1,5 @@
 import _ from "lodash";
-import { findPath, manhattanHeuristic, mod } from "./aoc.js";
+import { dijkstraHeuristic, findPath, mod } from "./aoc.js";
 
 class BlizzardMaze {
   constructor({
@@ -20,21 +20,20 @@ class BlizzardMaze {
     this.southWinds = southWinds;
     this.westWinds = westWinds;
     this.eastWinds = eastWinds;
+    this.backToStart = false;
 
     this.start = {
       pos: startPos,
       tick: 0,
     };
 
-    this.hPos = manhattanHeuristic(this.goalPos);
+    this.h = dijkstraHeuristic;
   }
 
   isGoal({ pos }) {
-    return _.isEqual(pos, this.goalPos);
-  }
-
-  h({ pos }) {
-    return this.hPos(pos);
+    return this.backToStart
+      ? _.isEqual(pos, this.startPos)
+      : _.isEqual(pos, this.goalPos);
   }
 
   getNeighbors({ pos: [row, col], tick }) {
@@ -132,5 +131,16 @@ export function part1(input) {
 }
 
 export function part2(input) {
-  return "TODO";
+  const blizzardMaze = parseInput(input);
+  const p1 = findPath(blizzardMaze);
+
+  blizzardMaze.start = _.last(p1);
+  blizzardMaze.backToStart = true;
+  const p2 = findPath(blizzardMaze);
+
+  blizzardMaze.start = _.last(p2);
+  blizzardMaze.backToStart = false;
+  const p3 = findPath(blizzardMaze);
+
+  return _([p1, p2, p3]).map("length").sum() - 3;
 }

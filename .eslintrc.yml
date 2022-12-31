@@ -23,4 +23,4 @@ rules:
   # mis-fires when accessing multi-dimensional arrays
   lodash/path-style: off
 parserOptions:
-  ecmaVersion: 2020
+  ecmaVersion: 2022

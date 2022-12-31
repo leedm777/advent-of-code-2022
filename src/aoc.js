@@ -151,3 +151,15 @@ export function findPath(graph) {
 
   return path;
 }
+
+export function mod(a, n) {
+  let r = a % n;
+  // signed zeros are a thing I guess
+  if (Object.is(r, -0)) {
+    return 0;
+  }
+  if (r < 0) {
+    r += n;
+  }
+  return r;
+}
